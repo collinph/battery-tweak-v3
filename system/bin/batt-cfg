@@ -1,0 +1,329 @@
+
+#!/system/bin/sh
+
+
+#Added USBpower definitions and options by Decad3nce
+. /system/etc/batt.conf
+
+load_defaults()
+{
+cpu_max_underclock_perc=33
+cpu_limiting_method=1
+max_freq_on_battery=710400
+max_freq_on_USBpower=748800
+polling_interval_on_battery=60
+polling_interval_on_USBpower=15
+polling_interval_on_power=15
+min_freq_on_battery=245000
+min_freq_on_power=245000
+min_freq_on_USBpower=245000
+
+
+}
+restart()
+{
+echo "Starting batt.sh"
+#nohup /system/bin/batt.sh 2>/dev/nul &
+start collin_ph
+t=`pidof batt.sh`
+if [ "$t" ]
+   then
+	 echo "Started"
+   else
+	 nohup /system/bin/batt.sh 2>/dev/nul &
+	 echo "NOTE: when you exit ADB or terminal, you may have to hit CTRL-C"
+fi
+
+}
+customize()
+{
+echo ""
+echo ""
+echo ""
+
+echo "You will be asked a series of configuration questions."
+echo "After Each option, enter your option and press enter."
+echo "Leave blank and press enter to keep the current setting."
+echo ""
+echo ""
+
+
+echo "The CPU limiting method is either underclock or powersave bias."
+echo "Underclock reclocks the cpu to a lower speed to conserve battery."
+echo "Powersave bias limits individual processes CPU usage to conserve battery."
+echo "";
+
+echo "[1] Underclock (highly recommended)"
+echo "[2] Powersave Bias"
+echo "Make a choice and hit enter, or leave blank to leave unchanged [$cpu_limiting_method]"
+read new_cpu_limiting_method
+echo ""
+echo ""
+case $new_cpu_limiting_method in
+        "1") cpu_limiting_method=1;;
+        "2") cpu_limiting_method=2;;
+				*) echo "setting unchanged";;
+esac
+
+echo ""
+echo ""
+echo ""
+echo ""
+echo "The Min and Max frequency settings determine how fast the CPU runs."
+echo "The Min frequency must be less than or equal to the Max."
+echo "Some phones do not support settings higher than 710400."
+echo ""
+echo "Available Frequencies :"
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+echo ""
+echo "Choose a Min CPU setting while ON BATTERY or enter [$min_freq_on_battery]"
+read new_min_freq_on_battery
+echo ""
+echo "Choose a Max CPU setting while ON BATTERY or enter [$max_freq_on_battery]"
+read new_max_freq_on_battery
+echo ""
+tminf=$min_freq_on_battery
+if [ "$new_min_freq_on_battery" ] 
+   then 
+   tminf=$new_min_freq_on_battery
+fi
+tmaxf=$max_freq_on_battery
+if [ "$new_max_freq_on_battery" ]
+   then
+	 tmaxf=$new_max_freq_on_battery
+fi
+
+if [ $tmaxf -ge $tminf ]
+   then
+	 min_freq_on_battery=$tminf
+	 max_freq_on_battery=$tmaxf
+	 echo "Battery CPU settings accepted."
+	 else
+	 echo "Invalid Battery CPU Settings. New Battery CPU settings ignored."
+fi
+
+echo ""
+echo ""
+echo ""
+echo ""
+echo "The Min and Max frequency settings determine how fast the CPU runs."
+echo "The Min frequency must be less than or equal to the 480000 on USB."
+echo "Some phones do not support settings higher than 710400."
+echo ""
+echo "Available Frequencies :"
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+echo ""
+echo "Choose a Min CPU setting while ON USB POWER or enter [$min_freq_on_USBpower]"
+read new_min_freq_on_USBpower
+echo ""
+echo "Choose a Max CPU setting while ON USB POWER or enter [$max_freq_on_USBpower]"
+read new_max_freq_on_USBpower
+echo ""
+tminf=$min_freq_on_USBpower
+if [ "$new_min_freq_on_USBpower" ] 
+   then 
+   tminf=$new_min_freq_on_USBpower
+fi
+tmaxf=$max_freq_on_USBpower
+if [ "$new_max_freq_on_USBpower" ]
+   then
+	 tmaxf=$new_max_freq_on_USBpower
+fi
+
+if [ $tmaxf -ge $tminf ]
+   then
+	 min_freq_on_USBpower=$tminf
+	 max_freq_on_USBpower=$tmaxf
+	 echo "USB Power CPU settings accepted."
+	 else
+	 echo "Invalid USB Power CPU Settings. New USB Power CPU settings ignored."
+fi
+
+echo ""
+echo ""
+echo ""
+echo ""
+
+echo ""
+echo "Note: These settings differ from USB charging, you can set the min freq higher than 480000 freely"
+echo ""
+echo ""
+echo "Choose a Min CPU setting while ON POWER or enter [$min_freq_on_power]"
+read new_min_freq_on_power
+echo ""
+echo "Choose a Max CPU setting while ON POWER or enter [$max_freq_on_power]"
+read new_max_freq_on_power
+echo ""
+
+tminf=$min_freq_on_power
+if [ $new_min_freq_on_power ] 
+   then 
+   tminf=$new_min_freq_on_power
+fi
+tmaxf=$max_freq_on_power
+if [ $new_max_freq_on_power ]
+   then
+	 tmaxf=$new_max_freq_on_power
+fi
+
+if [ "$tmaxf" -ge "$tminf" ]
+   then
+	 min_freq_on_power=$tminf
+	 max_freq_on_power=$tmaxf
+	 echo "Power CPU settings accepted."
+	 else
+	 echo "Invalid Power CPU Settings. New Power CPU settings ignored."
+fi
+
+echo ""
+echo ""
+echo ""
+echo ""
+
+echo "The batt.sh service will poll the system perodically to detect the power state."
+echo "The delay between polls (in seconds) is called the polling interval."
+echo "To save battery, this interval should be longer when on battery."
+echo "When on power, the interval is less."
+echo "This helps quickly adjust the settings when the power is removed."
+echo "The lower the intervals, the more CPU will be used."
+
+echo "Enter the polling interval (in seconds) when on battery: [$polling_interval_on_battery]"
+read new_polling_interval_on_battery
+echo ""
+if [ "$new_polling_interval_on_battery" -gt 1 ] 
+   then
+	 polling_interval_on_battery=$new_polling_interval_on_battery
+else
+   echo "Interval not updated"
+fi
+
+echo "Enter the polling interval (in seconds) when on USB power: [$polling_interval_on_USBpower]"
+read new_polling_interval_on_USBpower
+echo ""
+if [ "$new_polling_interval_on_battery" -gt 1 ] 
+   then
+	 polling_interval_on_USBpower=$new_polling_interval_on_USBpower
+else
+   echo "Interval not updated"
+fi
+
+echo "Enter the polling interval (in seconds) when on AC power: [$polling_interval_on_power]"
+read new_polling_interval_on_power
+echo ""
+if [ "$new_polling_interval_on_battery" -gt 1 ] 
+   then
+	 polling_interval_on_power=$new_polling_interval_on_power
+else
+   echo "Interval not updated"
+fi
+
+
+
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
+echo "The CPU or process speed will be limited as the battery drains."
+echo "When fully charged or charging, the CPU will operate at full speed"
+echo "When nearly dead, the cpu will be reduced by a certain percentage"
+echo "This percentage must be a whole number and not contain a % sign"
+echo ""
+echo "Please enter the maximum percentage to reduce the CPU by [$cpu_max_underclock_perc]"
+read new_cpu_max_underclock_perc
+t=`expr "$new_cpu_max_underclock_perc" ">" 1`
+if [ "$t" -gt 0 ] 
+   then
+	 cpu_max_underclock_perc=$new_cpu_max_underclock_perc  
+else
+   echo "CPU Underclock percentage not updated."
+fi
+
+
+save_settings
+}
+
+load_768()
+{
+echo "Loading 768mhz defaults"
+load_defaults
+max_freq_on_power=768000
+max_freq_on_USBpower=768000
+save_settings
+}
+
+load_710()
+{
+echo "Loading 710mhz defaults"
+load_defaults
+max_freq_on_power=710400
+max_freq_on_USBpower=710400
+save_settings
+}
+
+save_settings()
+{
+tpid=`pidof batt.sh`
+if [ $tpid ]
+ then
+ echo "Killing batt.sh process"
+ kill -9 $tpid
+ fi
+
+echo "Saving Settings..."
+
+mount -o remount,rw /system
+echo "cpu_limiting_method=$cpu_limiting_method" > /system/etc/batt.conf
+echo "min_freq_on_battery=$min_freq_on_battery" >> /system/etc/batt.conf
+echo "max_freq_on_battery=$max_freq_on_battery" >> /system/etc/batt.conf
+echo "min_freq_on_USBpower=$min_freq_on_USBpower" >> /system/etc/batt.conf
+echo "max_freq_on_USBpower=$max_freq_on_USBpower" >> /system/etc/batt.conf
+echo "min_freq_on_power=$min_freq_on_power" >> /system/etc/batt.conf
+echo "max_freq_on_power=$max_freq_on_power" >> /system/etc/batt.conf
+echo "polling_interval_on_battery=$polling_interval_on_battery" >> /system/etc/batt.conf
+echo "polling_interval_on_power=$polling_interval_on_power" >> /system/etc/batt.conf
+echo "polling_interval_on_USBpower=$polling_interval_on_USBpower" >> /system/etc/batt.conf
+echo "cpu_max_underclock_perc=$cpu_max_underclock_perc " >> /system/etc/batt.conf
+mount -o remount,ro /system
+
+echo ""
+echo "Settings Saved."
+restart
+}
+
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
+
+echo "The batt-cfg utility configures the collin_ph battery tweak."
+
+echo "When on USB/AC power, maximum performance settings will be used."
+echo "When on battery, more conservative settings will be used."
+echo "As the battery drains, the CPU clock will be lowered."
+echo "The CPU Scales between min and max settings always."
+echo "Additional timing and memory settings are adjusted."
+echo ""
+echo ""
+echo ""
+echo "Please choose an option and press enter."
+echo "[1] Revert to 768 mhz defaults and exit"
+echo "[2] Revert to 710mhz defaults and exit"
+echo "[3] Customize settings"
+echo "[Enter]: Exit"
+read choice
+echo ""
+echo ""
+
+  case $choice in
+        "1") load_768;;
+        "2") load_710;;
+				"3") customize;;
+				*) echo "Exiting. No Changes Saved";;
+     esac

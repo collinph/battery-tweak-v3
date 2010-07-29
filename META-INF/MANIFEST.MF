@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Created-By: 1.0 (Android SignApk)
+
+Name: META-INF/com/google/android/update-script
+SHA1-Digest: Yxj22Fv6gtwZME43iPVtkKzNHjU=
+
+Name: system/bin/batt.sh
+SHA1-Digest: pvE8CBQI/092h15d3ODlsgudILI=
+
+Name: system/etc/batt.conf
+SHA1-Digest: q9tzSTGhA4EG0Fv0DIZn8Ziiha8=
+
+Name: system/etc/init.d/20userinit
+SHA1-Digest: B5P6nRp4IQqmbxwMhJviJHKjPGU=
+
+Name: system/etc/init.local.rc
+SHA1-Digest: nhHPa5R9SuFRdbNAgByK/EHmjDw=
+
+Name: system/bin/batt-cfg
+SHA1-Digest: NE5uieFST0X3rDov0hcCd0YByzU=
+

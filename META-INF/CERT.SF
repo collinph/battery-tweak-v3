@@ -1,0 +1,22 @@
+Signature-Version: 1.0
+Created-By: 1.0 (Android SignApk)
+SHA1-Digest-Manifest: DC23usISWnGNkmr3b4QnFfm42hI=
+
+Name: META-INF/com/google/android/update-script
+SHA1-Digest: XOQ3mGs7QLNXINvXRZXN9FABoeA=
+
+Name: system/bin/batt.sh
+SHA1-Digest: lKOj/idTsS2fv4LFii40NQ3QVIs=
+
+Name: system/etc/batt.conf
+SHA1-Digest: aNNRi3dtYq1Whh0L0WZrlM/N0uM=
+
+Name: system/etc/init.d/20userinit
+SHA1-Digest: EzCR/1IPt0NU/wj1+4P7hnKPGXg=
+
+Name: system/bin/batt-cfg
+SHA1-Digest: w751S1UdXw2STG+Hc64IDmVVyWw=
+
+Name: system/etc/init.local.rc
+SHA1-Digest: s9TZM9oLeN4gTjS7ZeXSfCVdVRc=
+
