@@ -72,7 +72,9 @@ echo "----Current Battery Temp----"
 tmp=`cat /sys/class/power_supply/battery/batt_temp`
 c=`expr "$tmp" "/" 10`
 f=`expr "$tmp" "*" 18`
-f=`expr "$tmp" "/" 100`
+f=`expr "$f" "/" 100`
+f=`expr "$f" "+" 32`
+
 echo " $f F / $c C"
 echo "----End of Battery Temp----"
 
