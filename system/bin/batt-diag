@@ -49,6 +49,18 @@ echo "----Mount points----"
 mount
 echo ""
 echo ""
+echo "Displaying CFS tweaks.----"
+mount -t debugfs none /sys/kernel/debug
+
+displayparm "/sys/kernel/debug/sched_features"
+displayparm "/proc/sys/kernel/sched_latency_ns"
+displayparm "/proc/sys/kernel/sched_min_granularity_ns"
+displayparm "/proc/sys/kernel/sched_wakeup_granularity_ns"
+umount /sys/kernel/debug
+
+echo ""
+echo ""
+echo ""
 echo "Displaying Batt.sh tweakables.----"
 
 
