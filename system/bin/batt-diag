@@ -1,0 +1,106 @@
+#!/system/bin/sh
+
+#batt-diag
+#displays information necessary to debug the collin_ph battery tweak
+#may be piped to more, or sent to a text file.
+#you may upload batt-diag logs to joe@primoweb.com for diagnosis.
+displayparm()
+{
+echo "$1"
+cat $1
+}
+echo "Collin_ph Battery diagnostic utility"
+echo "batt-diag -v for verbose diagnostics"
+echo "Checking if batt.sh service is running"
+out=`pidof batt.sh`
+echo "pidof batt.sh: $out"
+echo ""
+echo "Checking dependencies. If any dependency is blank the battery tweak may not function and should be disabled"
+out=`which sleep`
+echo "sleep: $out"
+out=`which mount`
+echo "mount: $out"
+out=`which expr`
+echo "expr : $out"
+out=`which log`
+echo "log : $log"
+echo ""
+echo "Checking tweak files and permissions"
+
+echo "Checking batt.sh service"
+out=`ls -l /system/bin/batt.sh`
+echo "$out"
+echo ""
+echo "Checking batt.conf configuration file"
+out=`ls -l /system/etc/batt.conf`
+echo "$out"
+echo ""
+echo "Checking batt-cfg configuration utility"
+out=`ls -l /system/bin/batt-cfg`
+echo "$out"
+echo ""
+
+echo "Checking Configuration"
+
+echo "----batt.conf file contents----"
+cat /system/etc/batt.conf
+echo "----end of batt.conf----"
+echo "----Mount points----"
+mount
+echo ""
+echo ""
+echo "Displaying Batt.sh tweakables.----"
+
+
+displayparm "/proc/sys/vm/swappiness"
+displayparm "/proc/sys/vm/dirty_expire_centisecs"
+displayparm "/proc/sys/vm/dirty_writeback_centisecs"
+displayparm "/proc/sys/vm/dirty_background_ratio"
+displayparm "/proc/sys/vm/dirty_ratio"
+displayparm "/proc/sys/vm/vfs_cache_pressure"
+displayparm "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq"
+displayparm "/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq"
+displayparm "/sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold"
+displayparm "/sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias"
+echo "Current charging source: 0=Battery 1=USB 2=AC"
+displayparm "/sys/class/power_supply/battery/charging_source"
+echo "Current battery capacity"
+displayparm "/sys/class/power_supply/battery/capacity"
+echo "----ROM Version----"
+cat /proc/version
+echo "----End of ROM Version ----"
+echo ""
+echo "---CPU Time in each Frequency---"
+cat /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state
+echo "---End of CPU Time in each Frequency----"
+
+
+if [ "$1" = "-v" ]
+   then
+	 echo "Displaying Verbose Settings."
+	 echo "----System Properties----"
+	 getprop
+	 echo "----End of System Properties----"
+   echo "----Running Tasks----"
+   out=`which top`
+	 if [ "$out" ]
+	    then
+			top -n 1
+			else
+			ps
+	 fi
+	 echo "----End of Running tasks----"
+	 echo "----CPU info----"
+	 cat /proc/cpuinfo
+	 echo "----End of CPU info----"
+   echo "----Schedular Stats----"
+	 cat /proc/schedstat
+	 echo "----End of Schedular Stats----"
+	 echo "----Swaps----"
+	 cat /proc/swaps
+	 echo "----End of Swaps----"
+	 echo "----MSM PM Stats----"
+	 cat /proc/msm_pm_stats
+	 echo "----End of PM Stats----"
+fi
+	 
