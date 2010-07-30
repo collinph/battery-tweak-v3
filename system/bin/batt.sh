@@ -9,6 +9,9 @@
 
 . /system/etc/batt.conf
 
+if [ "$disabled" != "1" ] 
+   then
+
 #Initialization variables
 #Dont mess with these.
 charging_source="unknown!"
@@ -28,6 +31,7 @@ log "collin_ph: Increasing Battery"
 
 
 mount -o remount,rw /
+
 current_polling_interval=$polling_interval_on_battery;
 echo 0 > /proc/sys/vm/swappiness
 echo 0 > /proc/sys/vm/dirty_expire_centisecs
@@ -162,3 +166,4 @@ fi
 
 done
 
+fi #end here if disabled

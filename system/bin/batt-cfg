@@ -1,12 +1,14 @@
-
 #!/system/bin/sh
 
-
 #Added USBpower definitions and options by Decad3nce
+
 . /system/etc/batt.conf
+
+disabled=0
 
 load_defaults()
 {
+disabled=0
 cpu_max_underclock_perc=33
 cpu_limiting_method=1
 max_freq_on_battery=710400
@@ -19,6 +21,11 @@ min_freq_on_power=245000
 min_freq_on_USBpower=245000
 
 
+}
+disable()
+{
+disabled=1
+save_settings
 }
 restart()
 {
@@ -271,9 +278,10 @@ if [ $tpid ]
  fi
 
 echo "Saving Settings..."
+mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system
 
-mount -o remount,rw /system
-echo "cpu_limiting_method=$cpu_limiting_method" > /system/etc/batt.conf
+echo "disabled=$disabled" > /system/etc/batt.conf
+echo "cpu_limiting_method=$cpu_limiting_method" >> /system/etc/batt.conf
 echo "min_freq_on_battery=$min_freq_on_battery" >> /system/etc/batt.conf
 echo "max_freq_on_battery=$max_freq_on_battery" >> /system/etc/batt.conf
 echo "min_freq_on_USBpower=$min_freq_on_USBpower" >> /system/etc/batt.conf
@@ -284,11 +292,15 @@ echo "polling_interval_on_battery=$polling_interval_on_battery" >> /system/etc/b
 echo "polling_interval_on_power=$polling_interval_on_power" >> /system/etc/batt.conf
 echo "polling_interval_on_USBpower=$polling_interval_on_USBpower" >> /system/etc/batt.conf
 echo "cpu_max_underclock_perc=$cpu_max_underclock_perc " >> /system/etc/batt.conf
-mount -o remount,ro /system
+mount -o remount,ro -t yaffs2 /dev/block/mtdblock3 /system
 
 echo ""
 echo "Settings Saved."
-restart
+if [ "$disabled" = "0" ]
+   then
+   restart
+fi
+
 }
 
 echo ""
@@ -316,6 +328,7 @@ echo "Please choose an option and press enter."
 echo "[1] Revert to 768 mhz defaults and exit"
 echo "[2] Revert to 710mhz defaults and exit"
 echo "[3] Customize settings"
+echo "[4] Disable Battery Tweak"
 echo "[Enter]: Exit"
 read choice
 echo ""
@@ -325,5 +338,6 @@ echo ""
         "1") load_768;;
         "2") load_710;;
 				"3") customize;;
+				"4") disable;;
 				*) echo "Exiting. No Changes Saved";;
      esac
