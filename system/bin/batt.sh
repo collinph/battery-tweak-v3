@@ -12,6 +12,21 @@
 if [ "$disabled" != "1" ] 
    then
 
+#CFS Tweaks for performance
+#These should make the Completely Fair Scheduler behave like the BFS
+#Dont mess with these.
+mount -t debugfs none /sys/kernel/debug
+mount -t /proc/sys/kernel
+echo "NO_NEW_FAIR_SLEEPERS" > /sys/kernel/debug/sched_features
+log "collin_ph: Changed sched_features"
+echo "600000" > /proc/sys/kernel/sched_latency_ns
+echo "400000" > /proc/sys/kernel/sched_min_granularity_ns
+echo "2000000" > /proc/sys/kernel/sched_wakeup_granularity_ns
+log "collin_ph: Changed further sched variables"
+umount /sys/kernel/debug
+umount /proc/sys/kernel
+#End of CFS Tweaks
+
 #Initialization variables
 #Dont mess with these.
 charging_source="unknown!"
