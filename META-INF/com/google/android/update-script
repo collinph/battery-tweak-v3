@@ -6,6 +6,8 @@ set_perm 0 2000 0755 SYSTEM:etc/init.local.rc
 
 set_perm 0 2000 0755 SYSTEM:bin/batt.sh
 
+set_perm 0 2000 0755 SYSTEM:bin/batt-rm.sh
+
 set_perm 0 2000 0755 SYSTEM:bin/batt-cfg
 
 set_perm 0 2000 0755 SYSTEM:etc/batt.conf
