@@ -80,6 +80,7 @@ echo "Current battery capacity"
 displayparm "/sys/class/power_supply/battery/capacity"
 displayparm "/sys/class/power_supply/battery/health"
 
+echo ""
 echo "----Current Battery Temp----"
 tmp=`cat /sys/class/power_supply/battery/batt_temp`
 c=`expr "$tmp" "/" 10`
@@ -90,6 +91,7 @@ f=`expr "$f" "+" 32`
 echo " $f F / $c C"
 echo "----End of Battery Temp----"
 
+echo ""
 echo "----ROM Version----"
 cat /proc/version
 echo "----End of ROM Version ----"
