@@ -151,9 +151,9 @@ echo ""
 echo ""
 echo ""
 
-echo ""
-echo "Note: These settings differ from USB charging, you can set the min freq higher than 480000 freely"
-echo ""
+echo "Set CPU settings on POWER"
+echo "Note: These settings differ from USB charging"
+echo "You can freely allow the Min CPU setting to be higher than 480000"
 echo ""
 echo "Choose a Min CPU setting while ON POWER or enter [$min_freq_on_power]"
 read new_min_freq_on_power

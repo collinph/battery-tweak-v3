@@ -1,9 +1,9 @@
 #!/system/bin/sh
 
-#Removal Beta v1.0 by Decad3nce
-#really complex shit eh?
+#Removal Beta v1.1 by Decad3nce
+#Application:
 application="Battery Tweak Script";
-#end of complex shit
+#End
 
 RemoveAllFiles()
 {
@@ -11,6 +11,7 @@ RemoveAllFiles()
    rm /system/bin/batt.sh;
    rm /system/bin/batt-cfg;
    rm /system/etc/batt.conf;
+   rm /system/bin/batt-diag;
    log "collin_ph: Removed $application";
    rm /system/bin/batt-rm.sh;
    mount -o remount,ro /
@@ -30,6 +31,7 @@ echo ""
 echo ""
 
 echo "This tool will remove almost all traces of the Battery Tweak"
+echo ""
 echo "Are you sure that you want to go through with this?[y/n]"
 read ANS
 
