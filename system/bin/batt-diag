@@ -23,7 +23,7 @@ echo "mount: $out"
 out=`which expr`
 echo "expr : $out"
 out=`which log`
-echo "log : $log"
+echo "log : $out"
 echo ""
 echo "Checking tweak files and permissions"
 
@@ -66,6 +66,16 @@ echo "Current charging source: 0=Battery 1=USB 2=AC"
 displayparm "/sys/class/power_supply/battery/charging_source"
 echo "Current battery capacity"
 displayparm "/sys/class/power_supply/battery/capacity"
+displayparm "/sys/class/power_supply/battery/health"
+
+echo "----Current Battery Temp----"
+tmp=`cat /sys/class/power_supply/battery/batt_temp`
+c=`expr "$tmp" "/" 10`
+f=`expr "$tmp" "*" 18`
+f=`expr "$tmp" "/" 100`
+echo " $f F / $c C"
+echo "----End of Battery Temp----"
+
 echo "----ROM Version----"
 cat /proc/version
 echo "----End of ROM Version ----"
