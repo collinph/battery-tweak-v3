@@ -12,3 +12,5 @@ set_perm 0 2000 0755 SYSTEM:bin/batt-cfg
 
 set_perm 0 2000 0755 SYSTEM:etc/batt.conf
 
+set_perm 0 2000 0755 SYSTEM:bin/batt-diag
+
