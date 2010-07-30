@@ -10,19 +10,25 @@
 . /system/etc/batt.conf
 
 if [ "$disabled" != "1" ] 
-   then
+ then
 
 #CFS Tweaks for performance
 #These should make the Completely Fair Scheduler behave like the BFS
 #Dont mess with these.
+launchCFStweaks()
+{
 mount -t debugfs none /sys/kernel/debug
+#echo "NO_NEW_WAIT_SLEEPERS" > /sys/kernel/debug/sched_features
+#echo "NO_NORMALIZE_SLEEPERS" > /sys/kernel/debug/sched_features
+#echo 24188 > /sys/kernel/debug/sched_features
 echo "NO_NEW_FAIR_SLEEPERS" > /sys/kernel/debug/sched_features
 log "collin_ph: Changed sched_features"
-echo "600000" > /proc/sys/kernel/sched_latency_ns
-echo "400000" > /proc/sys/kernel/sched_min_granularity_ns
-echo "2000000" > /proc/sys/kernel/sched_wakeup_granularity_ns
+echo 600000 > /proc/sys/kernel/sched_latency_ns
+echo 400000 > /proc/sys/kernel/sched_min_granularity_ns
+echo 2000000 > /proc/sys/kernel/sched_wakeup_granularity_ns
 log "collin_ph: Changed further sched variables"
 umount /sys/kernel/debug
+}
 #End of CFS Tweaks
 
 #Initialization variables
@@ -44,7 +50,7 @@ log "collin_ph: Increasing Battery"
 
 
 mount -o remount,rw /
-
+echo 0 > /sys/class/leds/*/brightness
 current_polling_interval=$polling_interval_on_battery;
 echo 0 > /proc/sys/vm/swappiness
 echo 0 > /proc/sys/vm/dirty_expire_centisecs
@@ -178,5 +184,10 @@ if [ "$charging_source" = "0" ]
 fi
 
 done
+
+case $CFStweaks in
+   "1") launchCFStweaks;;
+     *) log "collin_ph: CFStweaks not enabled"
+esac
 
 fi #end here if disabled

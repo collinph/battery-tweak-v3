@@ -39,6 +39,10 @@ echo "Checking batt-cfg configuration utility"
 out=`ls -l /system/bin/batt-cfg`
 echo "$out"
 echo ""
+echo "Checking batt-rm.sh service"
+out=`ls -l /system/bin/batt-rm.sh`
+echo "$out"
+echo ""
 
 echo "Checking Configuration"
 
