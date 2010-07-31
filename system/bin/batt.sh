@@ -47,7 +47,7 @@ log "collin_ph: Increasing Battery"
 mount -o remount,rw -t yaffs2 /dev/block/mtdblock3
 if [ $LEDfix ] 
    then
-   echo 0 > /sys/class/leds/red/brightness
+   echo 0 > /sys/class/leds/amber/brightness
    echo 0 > /sys/class/leds/green/brightness
 fi
 current_polling_interval=$polling_interval_on_battery;
