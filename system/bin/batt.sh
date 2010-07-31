@@ -12,9 +12,19 @@
 if [ "$disabled" != "1" ] 
  then
 
-#CFS Tweaks for performance
-#These should make the Completely Fair Scheduler behave like the BFS
+#Initialization variables
 #Dont mess with these.
+charging_source="unknown!"
+last_source="unknown";
+batt_life=0;
+current_polling_interval=5;
+current_max_clock=0
+bias=0;
+last_bias=0;
+last_capacity=0;
+#End of init variables
+
+
 launchCFStweaks()
 {
 mount -t debugfs none /sys/kernel/debug
@@ -29,19 +39,6 @@ echo 2000000 > /proc/sys/kernel/sched_wakeup_granularity_ns
 log "collin_ph: Changed further sched variables"
 umount /sys/kernel/debug
 }
-#End of CFS Tweaks
-
-#Initialization variables
-#Dont mess with these.
-charging_source="unknown!"
-last_source="unknown";
-batt_life=0;
-current_polling_interval=5;
-current_max_clock=0
-bias=0;
-last_bias=0;
-last_capacity=0;
-#End of init variables
 
 increase_battery()
 {
