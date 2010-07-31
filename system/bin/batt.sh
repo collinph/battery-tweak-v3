@@ -28,15 +28,13 @@ last_capacity=0;
 launchCFStweaks()
 {
 mount -t debugfs none /sys/kernel/debug
-#echo "NO_NEW_WAIT_SLEEPERS" > /sys/kernel/debug/sched_features
-#echo "NO_NORMALIZE_SLEEPERS" > /sys/kernel/debug/sched_features
-#echo 24188 > /sys/kernel/debug/sched_features
-echo "NO_NEW_FAIR_SLEEPERS" > /sys/kernel/debug/sched_features
+#NEW_WAIT_SLEEPER and GENTLE_FAIR_SLEEPERS dont exist in sched_features
+echo "NO_NORMALIZED_SLEEPER" > /sys/kernel/debug/sched_features
 log "collin_ph: Changed sched_features"
 echo 600000 > /proc/sys/kernel/sched_latency_ns
 echo 400000 > /proc/sys/kernel/sched_min_granularity_ns
 echo 2000000 > /proc/sys/kernel/sched_wakeup_granularity_ns
-log "collin_ph: Changed further sched variables"
+log "collin_ph: Changed sched epoch duration/granularity in CFS"
 umount /sys/kernel/debug
 }
 
