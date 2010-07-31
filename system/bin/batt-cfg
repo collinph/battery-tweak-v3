@@ -2,15 +2,40 @@
 
 #Added USBpower definitions and options by Decad3nce
 
+LEDfix=0
+CFStweaks=0
+enabled=1
 . /system/etc/batt.conf
 
-disabled=0
-CFStweaks=0
+#disabled replaced with enabled
+#disabled=0
+#CFStweaks=0
+
+toggle()
+{
+if [ "$1" -gt "0" ]
+   then
+	 echo 0
+	 else
+ 	 echo 1
+fi
+}
+
+get_disp()
+{
+if [ "$1" -gt "0" ]
+   then
+	 echo "Disable"
+	 else
+	 echo "Enable"
+fi
+}
 
 load_defaults()
 {
+LEDfix=1
 CFStweaks=0
-disabled=0
+enabled=1
 cpu_max_underclock_perc=33
 cpu_limiting_method=1
 max_freq_on_battery=710400
@@ -25,11 +50,8 @@ min_freq_on_USBpower=245000
 
 
 }
-disable()
-{
-disabled=1
-save_settings
-}
+
+
 restart()
 {
 echo "Starting batt.sh"
@@ -140,7 +162,7 @@ if [ "$new_max_freq_on_USBpower" ]
 	 tmaxf=$new_max_freq_on_USBpower
 fi
 
-if [ $tmaxf -ge $tminf ]
+if [ "$tmaxf" -ge "$tminf" ]
    then
 	 min_freq_on_USBpower=$tminf
 	 max_freq_on_USBpower=$tmaxf
@@ -166,12 +188,12 @@ read new_max_freq_on_power
 echo ""
 
 tminf=$min_freq_on_power
-if [ $new_min_freq_on_power ] 
+if [ "$new_min_freq_on_power" ] 
    then 
    tminf=$new_min_freq_on_power
 fi
 tmaxf=$max_freq_on_power
-if [ $new_max_freq_on_power ]
+if [ "$new_max_freq_on_power" ]
    then
 	 tmaxf=$new_max_freq_on_power
 fi
@@ -251,15 +273,25 @@ fi
 
 echo ""
 echo ""
+if [ "$CFStweaks" ]
+   then 
+	 CFStweaks_disp="Y"
+	 else
+	 CFStweaks_cisp="N"
+	 CFStweaks=0
+fi
 echo "Would you like to enable experimental tweaks to the Completely Fair"
-echo "Scheduler?(1/0)(1=yes 2=no)"
+echo "Scheduler? (Y/N) [$CFStweaks_disp] "
 read new_CFStweak_ans
 
-if [ $new_CFStweak_ans -gt 1 ]
-   then CFStweak=$new_CFStweak_ans
-else
-   echo "CFStweaks unchanged"
-fi
+#We could use TR here, but it would be an additional requirement
+case $new_CFStweak_ans in
+        "y") CFStweaks=1;;
+        "n") CFStweaks=0;;
+				"Y") CFStweaks=1;;
+				"N") CFStweaks=0;;
+				*) echo "CFStweaks unchanged";;
+esac 
 
 save_settings
 }
@@ -294,8 +326,9 @@ if [ $tpid ]
 echo "Saving Settings..."
 mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system
 
-echo "CFStweaks=$CFStweaks" >> /system/etc/batt.conf
-echo "disabled=$disabled" >> /system/etc/batt.conf
+echo "CFStweaks=$CFStweaks" > /system/etc/batt.conf
+echo "enabled=$enabled" >> /system/etc/batt.conf
+echo "LEDfix=$LEDfix" >> /system/etc/batt.conf
 echo "cpu_limiting_method=$cpu_limiting_method" >> /system/etc/batt.conf
 echo "min_freq_on_battery=$min_freq_on_battery" >> /system/etc/batt.conf
 echo "max_freq_on_battery=$max_freq_on_battery" >> /system/etc/batt.conf
@@ -311,12 +344,15 @@ mount -o remount,ro -t yaffs2 /dev/block/mtdblock3 /system
 
 echo ""
 echo "Settings Saved."
-if [ "$disabled" = "0" ]
+if [ "$enabled" ]
    then
    restart
 fi
-
+exit
 }
+
+while [ 1 ]
+do
 
 echo ""
 echo ""
@@ -339,12 +375,21 @@ echo "Additional timing and memory settings are adjusted."
 echo ""
 echo ""
 echo ""
+
 echo "Please choose an option and press enter."
-echo "[1] Revert to 768 mhz defaults and exit"
+echo "[1] Revert to 768mhz defaults and exit"
 echo "[2] Revert to 710mhz defaults and exit"
 echo "[3] Customize settings"
-echo "[4] Disable Battery Tweak"
-echo "[Enter]: Exit"
+
+
+disp=`get_disp $enabled`
+echo "[4] $disp Battery Tweak (If disabled, no features will function."
+disp=`get_disp $CFStweaks`
+echo "[5] $disp Experimental CFS Tweaks"
+disp=`get_disp $LEDfix`
+echo "[6] $disp LED Fix (if LED sticks on after charging)"
+echo "[9] Save Changes & Exit"
+echo "[Enter]: Exit Without Saving Changes"
 read choice
 echo ""
 echo ""
@@ -353,6 +398,12 @@ echo ""
         "1") load_768;;
         "2") load_710;;
 				"3") customize;;
-				"4") disable;;
-				*) echo "Exiting. No Changes Saved";;
+				"4") enabled=`toggle $enabled`;;
+				"5") CFStweaks=`toggle $CFStweaks`;;
+				"6") LEDfix=`toggle $LEDfix`;;
+				"9") save_settings;;
+				*) echo "Exiting. No Changes Saved"
+				   exit;; 
      esac
+done
+

@@ -9,7 +9,7 @@
 
 . /system/etc/batt.conf
 
-if [ "$disabled" != "1" ] 
+if [ "$enabled" ] 
  then
 
 #CFS Tweaks for performance
@@ -48,9 +48,12 @@ increase_battery()
 log "collin_ph: Increasing Battery"
 #New Performance Tweaks
 
-
-mount -o remount,rw /
-echo 0 > /sys/class/leds/*/brightness
+#don't think the mount line is necessary
+#mount -o remount,rw /
+if [ $LEDfix ] 
+   then
+   echo 0 > /sys/class/leds/amber/brightness
+fi
 current_polling_interval=$polling_interval_on_battery;
 echo 0 > /proc/sys/vm/swappiness
 echo 0 > /proc/sys/vm/dirty_expire_centisecs
@@ -64,14 +67,16 @@ echo 95 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
 echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias
 last_capacity=0;
 current_max_clock=$max_freq_on_battery
-mount -o remount,ro /
+#again, mount line is probably not necessary
+#mount -o remount,ro /
 log "collin_ph: Done Increasing Battery"
 }
 
 increase_performanceUSB()
 {
 log "collin_ph: Increasing Performance For USB Charging"
-mount -o remount,rw /
+
+#mount -o remount,rw /
 current_polling_interval=$polling_interval_on_USBpower;
 echo 30 > /proc/sys/vm/swappiness
 echo 1500 > /proc/sys/vm/dirty_expire_centisecs
@@ -85,14 +90,14 @@ echo 45 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
 echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias
 last_capacity=0;
 current_max_clock=$max_clock_on_USBpower
-mount -o remount,ro /
+#mount -o remount,ro /
 log "collin_ph: Done Increasing Performance on USB Charging"
 }
 
 increase_performance()
 {
 log "collin_ph: Increasing Performance"
-mount -o remount,rw /
+#mount -o remount,rw /
 current_polling_interval=$polling_interval_on_power;
 echo 30 > /proc/sys/vm/swappiness
 echo 3000 > /proc/sys/vm/dirty_expire_centisecs
@@ -106,7 +111,7 @@ echo 50 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
 echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias
 last_capacity=0;
 current_max_clock=$max_clock_on_power
-mount -o remount,ro /
+#mount -o remount,ro /
 log "collin_ph: Done Increasing Performance"
 }
 set_powersave_bias()
@@ -118,9 +123,9 @@ set_powersave_bias()
     if [ "$bias" != "$last_bias" ]
        then
        log "collin_ph: Setting powersave bias to $bias"
-       mount -o remount,rw /
+       #mount -o remount,rw /
        echo $bias > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias
-       mount -o remount,ro /
+       #mount -o remount,ro /
        last_bias=$bias;
       log "collin_ph: Done Setting powersave bias"
        
@@ -190,4 +195,4 @@ case $CFStweaks in
      *) log "collin_ph: CFStweaks not enabled"
 esac
 
-fi #end here if disabled
+fi #end here if enabled
