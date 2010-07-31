@@ -52,7 +52,7 @@ log "collin_ph: Increasing Battery"
 #mount -o remount,rw /
 if [ $LEDfix ] 
    then
-   echo 0 > /sys/class/leds/amber/brightness
+   echo 0 > /sys/class/leds/*/brightness
 fi
 current_polling_interval=$polling_interval_on_battery;
 echo 0 > /proc/sys/vm/swappiness
