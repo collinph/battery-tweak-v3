@@ -44,12 +44,11 @@ increase_battery()
 {
 log "collin_ph: Increasing Battery"
 #New Performance Tweaks
-
-#don't think the mount line is necessary
-#mount -o remount,rw /
+mount -o remount,rw -t yaffs2 /dev/block/mtdblock3
 if [ $LEDfix ] 
    then
-   echo 0 > /sys/class/leds/*/brightness
+   echo 0 > /sys/class/leds/red/brightness
+   echo 0 > /sys/class/leds/green/brightness
 fi
 current_polling_interval=$polling_interval_on_battery;
 echo 0 > /proc/sys/vm/swappiness
@@ -64,8 +63,7 @@ echo 95 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
 echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias
 last_capacity=0;
 current_max_clock=$max_freq_on_battery
-#again, mount line is probably not necessary
-#mount -o remount,ro /
+mount -o remount,ro -t yaffs2 /dev/block/mtdblock3
 log "collin_ph: Done Increasing Battery"
 }
 
