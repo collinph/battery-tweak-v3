@@ -29,7 +29,9 @@ launchCFStweaks()
 {
 mount -t debugfs none /sys/kernel/debug
 #NEW_WAIT_SLEEPER and GENTLE_FAIR_SLEEPERS dont exist in sched_features
+#echo "NO_ASYM_GRAN" > /sys/kernel/debug/sched_features
 echo "NO_NORMALIZED_SLEEPER" > /sys/kernel/debug/sched_features
+echo "NO_NEW_FAIR_SLEEPER" > /sys/kernel/debug/sched_features
 log "collin_ph: Changed sched_features"
 echo 600000 > /proc/sys/kernel/sched_latency_ns
 echo 400000 > /proc/sys/kernel/sched_min_granularity_ns
