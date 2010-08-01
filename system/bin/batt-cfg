@@ -270,28 +270,7 @@ if [ "$t" -gt 0 ]
 else
    echo "CPU Underclock percentage not updated."
 fi
-
 echo ""
-echo ""
-if [ "$CFStweaks" ]
-   then 
-	 CFStweaks_disp="Y"
-	 else
-	 CFStweaks_cisp="N"
-	 CFStweaks=0
-fi
-echo "Would you like to enable experimental tweaks to the Completely Fair"
-echo "Scheduler? (Y/N) [$CFStweaks_disp] "
-read new_CFStweak_ans
-
-#We could use TR here, but it would be an additional requirement
-case $new_CFStweak_ans in
-        "y") CFStweaks=1;;
-        "n") CFStweaks=0;;
-				"Y") CFStweaks=1;;
-				"N") CFStweaks=0;;
-				*) echo "CFStweaks unchanged";;
-esac 
 
 save_settings
 }
