@@ -33,7 +33,7 @@ fi
 
 load_defaults()
 {
-LEDfix=1
+LEDfix=0
 CFStweaks=0
 enabled=1
 cpu_max_underclock_perc=33
