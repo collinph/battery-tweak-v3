@@ -202,6 +202,7 @@ done
 case $MOUNToptions in
    "1") launchMOUNToptions;;
      *) log "collin_ph: MOUNToptions not enabled"
+esac
 
 case $CFStweaks in
    "1") launchCFStweaks;;
