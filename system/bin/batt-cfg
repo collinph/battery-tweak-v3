@@ -308,7 +308,7 @@ echo "Saving Settings..."
 mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system
 
 echo "CFStweaks=$CFStweaks" > /system/etc/batt.conf
-echo "MOUNToptions=$MOUNToptions" >> /system/etc/batt.conf
+echo "MOUNToptions=$MOUNToptions" > /system/etc/batt.conf
 echo "enabled=$enabled" >> /system/etc/batt.conf
 echo "LEDfix=$LEDfix" >> /system/etc/batt.conf
 echo "cpu_limiting_method=$cpu_limiting_method" >> /system/etc/batt.conf
@@ -370,8 +370,8 @@ disp=`get_disp $CFStweaks`
 echo "[5] $disp Experimental CFS Tweaks"
 disp=`get_disp $LEDfix`
 echo "[6] $disp LED Fix (if LED sticks on after charging)"
-echo "[7] $disp Experimental MOUNT options"
 disp=`get_disp $MOUNToptions`
+echo "[8] $disp Experimental MOUNT options"
 echo "[9] Save Changes & Exit"
 echo "[Enter]: Exit Without Saving Changes"
 read choice
@@ -385,7 +385,7 @@ echo ""
 				"4") enabled=`toggle $enabled`;;
 				"5") CFStweaks=`toggle $CFStweaks`;;
 				"6") LEDfix=`toggle $LEDfix`;;
-                                "7") MOUNToptions=`toggle $MOUNToptions;;
+                                "8") MOUNToptions=`toggle $MOUNToptions`;;
 				"9") save_settings;;
 				*) echo "Exiting. No Changes Saved"
 				   exit;; 
