@@ -51,6 +51,7 @@ cat /system/etc/batt.conf
 echo "----end of batt.conf----"
 echo "----Mount points----"
 mount
+displayparm "/proc/mounts/"
 echo ""
 echo ""
 echo "Displaying CFS tweaks.----"	 	

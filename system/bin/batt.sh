@@ -24,6 +24,20 @@ last_bias=0;
 last_capacity=0;
 #End of init variables
 
+launchMOUNToptions()
+{
+mount -o remount,noatime,nodiratime /
+mount -o remount,noatime,nodiratime /dev
+mount -o remount,noatime,nodiratime /proc
+mount -o remount,noatime,nodiratime /sys
+mount -o remount,noatime,nodiratime /mnt/asec
+mount -o remount,noatime,nodiratime /system
+#mount -o remount,noatime,nodiratime /data
+#mount -o remount,noatime,nodiratime /cache
+mount -o remount,noatime,nodiratime /mnt/sdcard
+mount -o remount,noatime,nodiratime /mnt/secure/asec
+mount -o remount,noatime,nodiratime /sdcard/.android_secure
+}
 
 launchCFStweaks()
 {
@@ -184,6 +198,10 @@ if [ "$charging_source" = "0" ]
 fi
 
 done
+
+case $MOUNToptions in
+   "1") launchMOUNToptions;;
+     *) log "collin_ph: MOUNToptions not enabled"
 
 case $CFStweaks in
    "1") launchCFStweaks;;
