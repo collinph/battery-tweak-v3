@@ -33,7 +33,7 @@ mount -o remount,noatime,nodiratime /sys
 mount -o remount,noatime,nodiratime /mnt/asec
 mount -o remount,noatime,nodiratime /system
 #mount -o remount,noatime,nodiratime /data
-#mount -o remount,noatime,nodiratime /cache
+mount -o remount,noatime,nodiratime /cache
 mount -o remount,noatime,nodiratime /mnt/sdcard
 mount -o remount,noatime,nodiratime /mnt/secure/asec
 mount -o remount,noatime,nodiratime /sdcard/.android_secure
