@@ -6,12 +6,25 @@
 #configurable options
 #moved to /system/etc/batt.conf
 
-
+echo "test1"
 . /system/etc/batt.conf
-
-if [ "$enabled" ] 
+echo "test2"
+if [ "$enabled" -gt "0" ] 
  then
-
+echo "test3"
+echo $audio_fix
+ echo "test4"
+if [ "$audio_fix" -gt "0" ]
+   then
+	 log "collin_ph: audiofix enabled, disabling stagefright"
+	 setprop media.stagefright.enable-player false
+	 else
+	 log "collin_ph: audiofix disabled, enabling stagefright"
+	 setprop media.stagefright.enable-player true
+fi
+	  
+ 
+ 
 #Initialization variables
 #Dont mess with these.
 charging_source="unknown!"
@@ -26,6 +39,7 @@ last_capacity=0;
 
 launchMOUNToptions()
 {
+<<<<<<< HEAD
 mount -o remount,noatime,nodiratime /
 mount -o remount,noatime,nodiratime /dev
 mount -o remount,noatime,nodiratime /proc
@@ -37,6 +51,21 @@ mount -o remount,noatime,nodiratime /cache
 mount -o remount,noatime,nodiratime /mnt/sdcard
 mount -o remount,noatime,nodiratime /mnt/secure/asec
 mount -o remount,noatime,nodiratime /sdcard/.android_secure
+=======
+log "collin_ph: remounting file systems $1"
+
+mount -o $1 / -t rootfs
+mount -o $1 /dev -t devpts
+mount -o $1 /proc -t proc
+mount -o $1 /sys -t sysfs
+mount -o $1 /mnt/asec -t tmpfs
+mount -o $1 /system -t yaffs2
+mount -o $1 /data -t yaffs2
+mount -o $1 /cache -t yaffs2
+mount -o $1 /mnt/sdcard -t vfat
+mount -o $1 /mnt/secure/asec -t vfat
+mount -o $1 /mnt/sdcard/.android_secure -t tmpfs
+>>>>>>> 26c024e0d335ca237aead95a095cf2f968b7fb8b
 }
 
 launchCFStweaks()
@@ -161,6 +190,16 @@ set_max_clock()
 
 
 }
+case $MOUNToptions in
+   "1") launchMOUNToptions remount,noatime,nodiratime;;
+     *) launchMOUNToptions remount,atime,diratime;;
+esac
+
+case $CFStweaks in
+   "1") launchCFStweaks;;
+     *) log "collin_ph: CFStweaks not enabled"
+esac
+
 
 while [ 1 ] 
 do
@@ -199,14 +238,5 @@ fi
 
 done
 
-case $MOUNToptions in
-   "1") launchMOUNToptions;;
-     *) log "collin_ph: MOUNToptions not enabled"
-esac
-
-case $CFStweaks in
-   "1") launchCFStweaks;;
-     *) log "collin_ph: CFStweaks not enabled"
-esac
 
 fi #end here if enabled
