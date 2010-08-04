@@ -2,10 +2,15 @@
 
 #Added USBpower definitions and options by Decad3nce
 
-LEDfix=0
+#this may seem redundant because they are included in load_defaults
+#this is only here in case the person upgraded from a prior version
+#sets sensible defaults in that case
+audio_fix=0
+LEDfix=1
 CFStweaks=0
 MOUNToptions=0
 enabled=1
+#end of sensible upgrade defaults
 . /system/etc/batt.conf
 
 #disabled replaced with enabled
@@ -34,8 +39,9 @@ fi
 
 load_defaults()
 {
+audio_fix=0
 LEDfix=1
-MOUNToptions=0
+MOUNToptions=1
 CFStweaks=0
 enabled=1
 cpu_max_underclock_perc=33
@@ -306,9 +312,9 @@ if [ $tpid ]
 
 echo "Saving Settings..."
 mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system
-
-echo "CFStweaks=$CFStweaks" > /system/etc/batt.conf
-echo "MOUNToptions=$MOUNToptions" > /system/etc/batt.conf
+echo "audio_fix=$audio_fix" > /system/etc/batt.conf
+echo "CFStweaks=$CFStweaks" >> /system/etc/batt.conf
+echo "MOUNToptions=$MOUNToptions" >>  /system/etc/batt.conf
 echo "enabled=$enabled" >> /system/etc/batt.conf
 echo "LEDfix=$LEDfix" >> /system/etc/batt.conf
 echo "cpu_limiting_method=$cpu_limiting_method" >> /system/etc/batt.conf
@@ -367,11 +373,15 @@ echo "[3] Customize settings"
 disp=`get_disp $enabled`
 echo "[4] $disp Battery Tweak (If disabled, no features will function."
 disp=`get_disp $CFStweaks`
-echo "[5] $disp Experimental CFS Tweaks"
+echo "[5] $disp Experimental CFS Performance Tweaks"
 disp=`get_disp $LEDfix`
 echo "[6] $disp LED Fix (if LED sticks on after charging)"
 disp=`get_disp $MOUNToptions`
-echo "[8] $disp Experimental MOUNT options"
+echo "[7] $disp Experimental Disk Boost"
+disp=`get_disp $audio_fix`
+disp2=`toggle $audio_fix`
+disp2=`get_disp $disp2`
+echo "[8] $disp Audio Quality Fix ($disp2 Stagefright)"
 echo "[9] Save Changes & Exit"
 echo "[Enter]: Exit Without Saving Changes"
 read choice
@@ -385,7 +395,8 @@ echo ""
 				"4") enabled=`toggle $enabled`;;
 				"5") CFStweaks=`toggle $CFStweaks`;;
 				"6") LEDfix=`toggle $LEDfix`;;
-                                "8") MOUNToptions=`toggle $MOUNToptions`;;
+        "7") MOUNToptions=`toggle $MOUNToptions`;;
+				"8") audio_fix=`toggle $audio_fix`;;
 				"9") save_settings;;
 				*) echo "Exiting. No Changes Saved"
 				   exit;; 
