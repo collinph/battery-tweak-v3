@@ -1,10 +1,11 @@
 #!/system/bin/sh
 
 
-#Added Beta Code 1.0 for usb-ac charging variants by Decad3nce
+#Added Beta Code 1.0s4 for usb-ac charging variants by Decad3nce
 #Battery Tweak Beta by collin_ph
 #configurable options
 #moved to /system/etc/batt.conf
+# s0be - Added lookup table to replace math.
 
 echo "test1"
 . /system/etc/batt.conf
@@ -23,8 +24,76 @@ if [ "$audio_fix" -gt "0" ]
 	 setprop media.stagefright.enable-player true
 fi
 	  
- 
- 
+GoodSpeeds="";
+GoodSpeedCount=0;
+MinMaxSpeed=`expr  "(" 100 "-" $cpu_max_underclock_perc ")" "*" $max_freq_on_battery "/" 100`;
+for freq in `cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies`
+do
+  if [ "$freq" -le "$max_freq_on_battery" ] && [ "$freq" -ge "$MinMaxSpeed" ]
+  then
+    if [ "$GoodSpeedCount" -gt "0" ]
+	then
+	  GoodSpeeds="$GoodSpeeds $freq";
+	else
+	  GoodSpeeds="$freq"
+	fi
+	GoodSpeedCount=`expr $GoodSpeedCount "+" 1`;
+  fi
+done
+
+log "collin_ph: Max Speeds: $GoodSpeeds"
+log "collin_ph: Max Max Speed: $max_freq_on_battery"
+log "collin_ph: Min Max Speed: $MinMaxSpeed"
+SmallBucket=`expr 100 "%" $GoodSpeedCount`
+BucketWidth=`expr 100 "/" $GoodSpeedCount`
+Buckets=$GoodSpeedCount
+EndBucket=1
+if [ "$SmallBucket" -ne "0" ]
+then
+  log "collin_ph: Remaining Buckets: $BucketWidth"
+  log "collin_ph: Last Bucket: $SmallBucket"
+else
+  log "collin_ph: All Buckets: $BucketWidth"
+fi
+
+log "collin_ph: Populating $Buckets Buckets"
+
+SpeedIndex=$GoodSpeedCount
+	  setvar Speed100 `echo $GoodSpeeds | awk '{ print $a }' -v a=$SpeedIndex`
+	  eval dump=\$Speed100
+	  log "collin_ph: Speed100 = $dump"
+
+for Bucket in `seq $Buckets -1 $EndBucket`
+do
+	bstart=`expr 100 "-" "(" $BucketWidth "*" "(" $Buckets "-" $Bucket ")" "+" $SmallBucket  ")"`
+	bend=`expr 100 "-" "(" $BucketWidth "*" "(" $Buckets "-" $Bucket "+" 1 ")" "+" $SmallBucket  ")" "+" 1 `
+	for Bin in `seq $bstart -1 $bend`
+	do
+	  SpeedIndex=$Bucket
+	  setvar Speed$Bin `echo $GoodSpeeds | awk '{ print $a }' -v a=$SpeedIndex`
+	  eval dump=\$Speed$Bin
+	  log "collin_ph: Speed$Bin = $dump"
+	done
+done
+
+if [ "$SmallBucket" -ne "0" ]
+then
+	bstart=`expr $SmallBucket "-" 1`
+	bend=0
+	for Bin in `seq $bstart -1 $bend`
+	do
+	  SpeedIndex=1
+	  setvar Speed$Bin `echo $GoodSpeeds | awk '{ print $a }' -v a=$SpeedIndex`
+	  eval dump=\$Speed$Bin
+	  log "collin_ph: Speed$Bin = $dump"
+	done
+else
+	  SpeedIndex=1
+	  setvar Speed0 `echo $GoodSpeeds | awk '{ print $a }' -v a=$SpeedIndex`
+	  eval dump=\$Speed0
+	  log "collin_ph: Speed0 = $dump"
+fi
+
 #Initialization variables
 #Dont mess with these.
 charging_source="unknown!"
@@ -39,19 +108,6 @@ last_capacity=0;
 
 launchMOUNToptions()
 {
-<<<<<<< HEAD
-mount -o remount,noatime,nodiratime /
-mount -o remount,noatime,nodiratime /dev
-mount -o remount,noatime,nodiratime /proc
-mount -o remount,noatime,nodiratime /sys
-mount -o remount,noatime,nodiratime /mnt/asec
-mount -o remount,noatime,nodiratime /system
-#mount -o remount,noatime,nodiratime /data
-mount -o remount,noatime,nodiratime /cache
-mount -o remount,noatime,nodiratime /mnt/sdcard
-mount -o remount,noatime,nodiratime /mnt/secure/asec
-mount -o remount,noatime,nodiratime /sdcard/.android_secure
-=======
 log "collin_ph: remounting file systems $1"
 
 mount -o $1 / -t rootfs
@@ -65,7 +121,6 @@ mount -o $1 /cache -t yaffs2
 mount -o $1 /mnt/sdcard -t vfat
 mount -o $1 /mnt/secure/asec -t vfat
 mount -o $1 /mnt/sdcard/.android_secure -t tmpfs
->>>>>>> 26c024e0d335ca237aead95a095cf2f968b7fb8b
 }
 
 launchCFStweaks()
@@ -173,23 +228,19 @@ set_powersave_bias()
 
 set_max_clock()
 {
-    temp=`expr 100 "-" $capacity`
-		temp=`expr $temp "*" $cpu_max_underclock_perc`
-		temp=`expr $temp "/" 100`
-		temp=`expr $temp "*" $max_freq_on_battery`
-		temp=`expr $temp "/" 100`
-		temp=`expr $max_freq_on_battery "-" $temp`
-    
+  eval temp=\$Speed$capacity
+   
     if [ "$temp" != "$current_max_clock" ]
        then
        current_max_clock=$temp
        log "collin_ph: Setting Max Clock to $temp";
        echo $temp > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
        log "collin_ph: Done Setting Max Clock";
+	   else
+	   log "collin_ph: Not changing to $temp";
     fi
-
-
 }
+
 case $MOUNToptions in
    "1") launchMOUNToptions remount,noatime,nodiratime;;
      *) launchMOUNToptions remount,atime,diratime;;
