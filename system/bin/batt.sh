@@ -8,7 +8,7 @@
 # s0be - Added lookup table to replace math.
 
 echo "test1"
-. /system/etc/batt.conf
+. ../../system/etc/batt.conf
 echo "test2"
 if [ "$enabled" -gt "0" ] 
  then
@@ -23,9 +23,17 @@ if [ "$audio_fix" -gt "0" ]
 	 log "collin_ph: audiofix disabled, enabling stagefright"
 	 setprop media.stagefright.enable-player true
 fi
-	  
+
+for s in `seq 0 100`
+do
+  setvar Speed$s 400000
+done
+
+genSpeedTable() {
+
 GoodSpeeds="";
 GoodSpeedCount=0;
+
 MinMaxSpeed=`expr  "(" 100 "-" $cpu_max_underclock_perc ")" "*" $max_freq_on_battery "/" 100`;
 for freq in `cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies`
 do
@@ -93,7 +101,7 @@ else
 	  eval dump=\$Speed0
 	  log "collin_ph: Speed0 = $dump"
 fi
-
+}
 #Initialization variables
 #Dont mess with these.
 charging_source="unknown!"
@@ -105,7 +113,7 @@ bias=0;
 last_bias=0;
 last_capacity=0;
 #End of init variables
-
+genSpeedTable;
 launchMOUNToptions()
 {
 log "collin_ph: remounting file systems $1"
@@ -161,6 +169,7 @@ echo 95 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
 echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias
 last_capacity=0;
 current_max_clock=$max_freq_on_battery
+genSpeedTable;;
 mount -o remount,ro -t yaffs2 /dev/block/mtdblock3
 log "collin_ph: Done Increasing Battery"
 }
@@ -183,6 +192,7 @@ echo 45 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
 echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias
 last_capacity=0;
 current_max_clock=$max_clock_on_USBpower
+genSpeedTable;;
 #mount -o remount,ro /
 log "collin_ph: Done Increasing Performance on USB Charging"
 }
@@ -204,6 +214,7 @@ echo 50 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
 echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias
 last_capacity=0;
 current_max_clock=$max_clock_on_power
+genSpeedTable;;
 #mount -o remount,ro /
 log "collin_ph: Done Increasing Performance"
 }
