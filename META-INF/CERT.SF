@@ -1,0 +1,28 @@
+Signature-Version: 1.0
+Created-By: 1.0 (Android SignApk)
+SHA1-Digest-Manifest: 66dM11bKbmzYTelvG2RN4pH5xdQ=
+
+Name: kernel/dump_image
+SHA1-Digest: 7u3YxFfZ3EOInXBt1zdLNTkVu/Y=
+
+Name: META-INF/com/google/android/updater-script
+SHA1-Digest: 09CTSIENezSoXHFDzxoe9PKfpBA=
+
+Name: kernel/mkbootimg
+SHA1-Digest: WRcg/s+1//quxbrgEM7+7pSN3og=
+
+Name: kernel/zImage
+SHA1-Digest: yVfcN+D7sFD9h7WowL0g8o4JF3E=
+
+Name: system/lib/modules/wlan.ko
+SHA1-Digest: /B8Z2Z8b3CUZ5pWVytmc+lpwSoM=
+
+Name: kernel/mkbootimg.sh
+SHA1-Digest: euko+uGm1kV3MVzw4zPbUGiakc8=
+
+Name: kernel/unpackbootimg
+SHA1-Digest: tvAyJQ7jHWX7/AAXmx69HGxp5YE=
+
+Name: META-INF/com/google/android/update-binary
+SHA1-Digest: TXbGGiwzeK/9vINYsxcQHf9B5Ec=
+

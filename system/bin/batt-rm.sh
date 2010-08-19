@@ -5,6 +5,20 @@
 application="Battery Tweak Script";
 #End
 
+echoit ()
+{
+echo "$1" | fold -s -w 45
+}
+who=`whoami`
+if [ "$who" != "root" ]
+ then
+ echoit "Running batt-rm.sh as root"
+ su -c "batt-rm.sh"
+ echoit "Exited batt-rm.sh as root"
+ exit
+fi
+
+
 RemoveAllFiles()
 {
    mount -o rw,remount /dev/block/mtd3 /system
@@ -21,7 +35,7 @@ RemoveAllFiles()
 DontRemoveFiles()
 {
    mount -o rw,remount /dev/block/mtd3 /system 
-   log "collin_ph: Canceled Removal of $application";
+   log "collin_ph: Cancelled Removal of $application";
    mount -o remount,ro /
    exit;
 }

@@ -1,0 +1,14 @@
+ui_print("Collin_ph BatteryTweak RC1");
+assert(getprop("ro.product.device") == "heroc" || getprop("ro.build.product") == "heroc" || getprop("ro.product.board") == "heroc");
+show_progress(0.500000, 0);
+mount("MTD", "system", "/system");
+show_progress(0.500000, 40);
+ui_print("Installing collin_ph BatteryTweak RC1...");
+package_extract_dir("system", "/system");
+set_perm_recursive(0, 2000, 0755, 0755, "/system/bin");
+set_perm(0, 2000, 0755, 0755, "/system/etc/batt.conf");
+set_perm(0, 2000, 0755, 0755, "/system/etc/init.local.rc");
+show_progress(0.200000, 0);
+ui_print("Finished installation, Enjoy :)");
+show_progress(0.200000, 10);
+unmount("/system");
