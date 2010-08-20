@@ -384,7 +384,7 @@ echoit "[3] Customize settings"
 disp=`get_disp $enabled`
 echoit "[4] $disp Battery Tweak Entirely"
 disp=`get_disp $CFStweaks`
-echoit "[5] $disp CFS Tweaks (Breaks GPS)"
+echoit "[5] $disp CFS Tweaks "
 disp=`get_disp $LEDfix`
 echoit "[6] $disp LED Fix (If LED Stuck)"
 disp=`get_disp $MOUNToptions`

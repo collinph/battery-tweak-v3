@@ -6,14 +6,9 @@
 #configurable options
 #moved to /system/etc/batt.conf
 
-echo "test1"
 . /system/etc/batt.conf
-echo "test2"
 if [ "$enabled" -gt "0" ] 
  then
-echo "test3"
-echo $audio_fix
- echo "test4"
 if [ "$audio_fix" -gt "0" ]
    then
 	 log "collin_ph: audiofix enabled, disabling stagefright"
@@ -27,6 +22,7 @@ fi
  
 #Initialization variables
 #Dont mess with these.
+CFSstate="unknown!"
 charging_source="unknown!"
 last_source="unknown";
 batt_life=0;
@@ -56,17 +52,32 @@ mount -o $1 /mnt/sdcard/.android_secure -t tmpfs
 
 launchCFStweaks()
 {
+navPID=`pidof "com.google.android.apps.maps:driveabout"`
+if [ "$navPID" ] 
+ then 
+ disableCFStweaks "Disabling CFS Tweaks, GPS Navigation detected.";
+ else
+ if [ "$CFSstate" != "enabled" ] 
+ then
+ mount -t debugfs none /sys/kernel/debug
+ log "collin_ph: Changed sched_features (CFS Tweaks Enabled)"
+ echo "NO_NEW_FAIR_SLEEPERS" > /sys/kernel/debug/sched_features
+ umount /sys/kernel/debug
+ CFSstate="enabled"
+ fi
+fi
+
+}
+disableCFStweaks()
+{
+if [ "$CFSstate" != "disabled" ]
+then
 mount -t debugfs none /sys/kernel/debug
-#NEW_WAIT_SLEEPER and GENTLE_FAIR_SLEEPERS dont exist in sched_features
-#echo "NO_ASYM_GRAN" > /sys/kernel/debug/sched_features
-echo "NO_NORMALIZED_SLEEPER" > /sys/kernel/debug/sched_features
-echo "NO_NEW_FAIR_SLEEPERS" > /sys/kernel/debug/sched_features
-log "collin_ph: Changed sched_features"
-echo 600000 > /proc/sys/kernel/sched_latency_ns
-echo 400000 > /proc/sys/kernel/sched_min_granularity_ns
-echo 2000000 > /proc/sys/kernel/sched_wakeup_granularity_ns
-log "collin_ph: Changed sched epoch duration/granularity in CFS"
+log "collin_ph: Changed sched_features $1"
+echo "NEW_FAIR_SLEEPERS" > /sys/kernel/debug/sched_features
 umount /sys/kernel/debug
+CFSstate="disabled"
+fi
 }
 
 increase_battery()
@@ -181,18 +192,21 @@ case $MOUNToptions in
      *) launchMOUNToptions remount,atime,diratime;;
 esac
 
-case $CFStweaks in
-   "1") launchCFStweaks;;
-     *) log "collin_ph: CFStweaks not enabled"
-esac
-
 
 while [ 1 ] 
 do
 charging_source=$(cat /sys/class/power_supply/battery/charging_source);
 capacity=$(cat /sys/class/power_supply/battery/capacity);
 
+
 sleep $current_polling_interval
+	    
+
+case $CFStweaks in
+   "1") launchCFStweaks;;
+     *) disableCFStweals "CFS Tweaks Disabled";;
+esac
+
 if [ "$charging_source" != "$last_source" ]
   then
      last_source=$charging_source;
