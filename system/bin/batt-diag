@@ -4,6 +4,20 @@
 #displays information necessary to debug the collin_ph battery tweak
 #may be piped to more, or sent to a text file.
 #you may upload batt-diag logs to joe@primoweb.com for diagnosis.
+
+echoit ()
+{
+echo "$1" | fold -s -w 45
+}
+who=`whoami`
+if [ "$who" != "root" ]
+ then
+ echoit "Running batt-diag as root"
+ su -c "batt-diag"
+ echoit "Exited batt-diag as root"
+ exit
+fi
+
 displayparm()
 {
 echo "$1"
