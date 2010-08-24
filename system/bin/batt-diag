@@ -12,12 +12,21 @@ echo "$1" | fold -s -w 45
 who=`whoami`
 if [ "$who" != "root" ]
  then
+ echoit "batt-diag must be ran as root."
+ echoit "Press enter to attempt to run as root"
+ echoit "Or press 1 then enter to continue without attempting to gain root access"
+ echoit ""
+ read opt
+ if [ "$opt" -eq "1" ] 
+  then
+	echoit "Continuing..."
+ else
  echoit "Running batt-diag as root"
  su -c "batt-diag"
  echoit "Exited batt-diag as root"
  exit
+ fi
 fi
-
 displayparm()
 {
 echo "$1"

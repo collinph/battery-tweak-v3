@@ -7,10 +7,19 @@ echo "$1" | fold -s -w 45
 who=`whoami`
 if [ "$who" != "root" ]
  then
- echoit "Running batt-cfg as root"
+ echoit "batt-cfg must be ran as root."
+ echoit "Press enter to attempt to run as root"
+ echoit "Or press 1 then enter to continue without attempting to gain root access"
+ echoit ""
+ read opt
+ if [ "$opt" -eq "1" ] 
+  then
+	echoit "Continuing..."
+ else
  su -c "batt-cfg"
  echoit "Exited batt-cfg as root"
  exit
+ fi
 fi
 
 show_freq_table()
