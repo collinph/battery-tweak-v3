@@ -204,7 +204,7 @@ sleep $current_polling_interval
 
 case $CFStweaks in
    "1") launchCFStweaks;;
-     *) disableCFStweals "CFS Tweaks Disabled";;
+     *) disableCFStweaks "CFS Tweaks Disabled";;
 esac
 
 if [ "$charging_source" != "$last_source" ]
